@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutriLens AI — Food & Nutrition Tracker</title>
+  <meta name="description" content="A simple food and nutrition tracker. Log meals, track calories and protein against your daily targets." />
+  <meta name="theme-color" content="#16a34a" />
+  <script>
+    // Apply the saved theme before first paint to avoid a light flash.
+    try {
+      var t = localStorage.getItem("nutrilens.theme");
+      if (t === "dark" || (!t && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.dataset.theme = "dark";
+      }
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ======= Header ======= -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <svg class="logo" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2C7 7 4 10.5 4 14.5A7.5 7.5 0 0 0 12 22a7.5 7.5 0 0 0 8-7.5C20 10.5 17 7 12 2z" fill="#16a34a"/>
+          <path d="M12 7v12" stroke="#dcfce7" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M12 12l3.2-3.2M12 15.5 8.6 12.1" stroke="#dcfce7" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <h1>NutriLens <span class="accent">AI</span></h1>
+          <p class="tagline">Simple food &amp; nutrition tracker</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <nav class="tabs" role="tablist" aria-label="Main sections">
+          <button class="tab active" id="tab-dashboard" role="tab" aria-selected="true" data-target="section-dashboard">
+            <span class="tab-icon" aria-hidden="true">📊</span> Dashboard
+          </button>
+          <button class="tab" id="tab-add" role="tab" aria-selected="false" data-target="section-add">
+            <span class="tab-icon" aria-hidden="true">➕</span> Add Food
+          </button>
+        </nav>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" title="Toggle dark mode">
+          <span class="theme-icon" id="theme-icon" aria-hidden="true">🌙</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ======= Date navigation (shared) ======= -->
+    <div class="date-bar card">
+      <div class="date-main">
+        <button class="icon-btn" id="prev-day" title="Previous day" aria-label="Previous day">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="date-display" id="date-display" type="button" aria-label="Pick a date" title="Pick a date">
+          <span class="date-weekday" id="date-weekday">Today</span>
+          <span class="date-full" id="date-full">—</span>
+        </button>
+        <button class="icon-btn" id="next-day" title="Next day" aria-label="Next day">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="date-side">
+        <span class="today-chip" id="today-chip" hidden>Viewing a past/future day</span>
+        <button class="btn btn-ghost small" id="jump-today" type="button">Jump to today</button>
+      </div>
+      <input type="date" id="date-picker" class="date-picker-hidden" aria-label="Selected date" tabindex="-1" />
+    </div>
+
+    <!-- ======= Dashboard section ======= -->
+    <section id="section-dashboard" class="section active" role="tabpanel" aria-labelledby="tab-dashboard">
+
+      <div class="stat-grid">
+        <div class="card stat-card accent-cal">
+          <div class="stat-icon cal" aria-hidden="true">🔥</div>
+          <div class="stat-body">
+            <p class="stat-label">Calories today</p>
+            <p class="stat-value"><span id="stat-calories">0</span> <small>kcal</small></p>
+            <p class="stat-sub" id="stat-cal-sub">of 2000 kcal target</p>
+          </div>
+        </div>
+        <div class="card stat-card accent-prot">
+          <div class="stat-icon prot" aria-hidden="true">💪</div>
+          <div class="stat-body">
+            <p class="stat-label">Protein today</p>
+            <p class="stat-value"><span id="stat-protein">0</span> <small>g</small></p>
+            <p class="stat-sub" id="stat-prot-sub">of 60 g target</p>
+          </div>
+        </div>
+        <div class="card stat-card accent-foods">
+          <div class="stat-icon foods" aria-hidden="true">🍽️</div>
+          <div class="stat-body">
+            <p class="stat-label">Foods logged</p>
+            <p class="stat-value"><span id="stat-count">0</span></p>
+            <p class="stat-sub" id="stat-count-sub">this day</p>
+          </div>
+        </div>
+        <div class="card stat-card accent-target">
+          <div class="stat-icon target" aria-hidden="true">🎯</div>
+          <div class="stat-body">
+            <p class="stat-label" id="stat-remaining-label">Calories remaining</p>
+            <p class="stat-value"><span id="stat-remaining">2000</span> <small>kcal</small></p>
+            <p class="stat-sub" id="stat-remaining-sub">until daily target</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Daily progress: calories + protein -->
+      <div class="card progress-card">
+        <h2>Daily progress</h2>
+
+        <div class="progress-block">
+          <div class="progress-row">
+            <span class="progress-title"><span aria-hidden="true">🔥</span> Calories</span>
+            <span class="progress-text" id="progress-text">0 / 2000 kcal</span>
+          </div>
+          <div class="progress-track" role="progressbar" aria-label="Calorie progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar-wrap">
+            <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div class="progress-block">
+          <div class="progress-row">
+            <span class="progress-title"><span aria-hidden="true">💪</span> Protein</span>
+            <span class="progress-text" id="protein-progress-text">0 / 60 g</span>
+          </div>
+          <div class="progress-track" role="progressbar" aria-label="Protein progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="protein-bar-wrap">
+            <div class="progress-fill protein" id="protein-progress-fill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <p class="progress-note" id="progress-note"></p>
+      </div>
+
+      <!-- Daily goals -->
+      <div class="card goals-card">
+        <h2>Daily targets</h2>
+        <p class="muted small-text">
+          Defaults of 2000 kcal and 60 g protein are <strong>example values only</strong> — not a
+          recommendation. Everyone's needs differ, so adjust them to your own plan.
+        </p>
+        <form id="goal-form" class="goal-form" novalidate>
+          <div class="field">
+            <label for="goal-calories">Calorie target (kcal)</label>
+            <input type="number" id="goal-calories" min="1" step="1" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="goal-protein">Protein target (g)</label>
+            <input type="number" id="goal-protein" min="1" step="1" inputmode="numeric" />
+          </div>
+          <button type="submit" class="btn btn-primary">Save targets</button>
+        </form>
+        <p class="muted small-text" id="protein-summary"></p>
+      </div>
+
+      <!-- Meal log -->
+      <div class="card log-card">
+        <h2>Meals logged <span id="log-date-label" class="muted"></span></h2>
+        <div id="meal-log"></div>
+        <div class="empty-state" id="empty-log" hidden>
+          <div class="empty-icon" aria-hidden="true">🥗</div>
+          <p><strong>Nothing logged for this day yet.</strong></p>
+          <p class="muted">Record what you ate and NutriLens will add up the numbers.</p>
+          <button type="button" class="btn btn-primary" id="empty-add-btn">Add your first meal</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= Add Food section ======= -->
+    <section id="section-add" class="section" role="tabpanel" aria-labelledby="tab-add">
+      <div class="card form-card">
+        <h2 id="form-heading">Add a food</h2>
+        <p class="muted small-text" id="add-date-note"></p>
+
+        <form id="food-form" novalidate>
+
+          <!-- Searchable food database combobox -->
+          <div class="field combo-field">
+            <label for="food-search">Search food database <span class="muted">(example nutrition values per 100 g)</span></label>
+            <div class="combo-wrap">
+              <span class="combo-icon" aria-hidden="true">🔍</span>
+              <input type="text" id="food-search" placeholder="Type to search — e.g. roti, dal, paneer…"
+                     autocomplete="off" role="combobox" aria-expanded="false"
+                     aria-controls="food-suggestions" aria-autocomplete="list" />
+              <button type="button" class="combo-clear" id="combo-clear" hidden aria-label="Clear search">×</button>
+            </div>
+            <ul id="food-suggestions" class="suggestions" role="listbox" hidden></ul>
+            <p class="field-hint muted">Pick a food to auto-fill its values, or skip this and enter a custom food below.</p>
+          </div>
+
+          <div class="field">
+            <label for="food-name">Food name</label>
+            <input type="text" id="food-name" placeholder="e.g. Roti" maxlength="60" required />
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="meal-type">Meal type</label>
+              <select id="meal-type" required>
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+                <option value="snack">Snack</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="quantity">Quantity (g)</label>
+              <input type="number" id="quantity" min="1" step="1" placeholder="e.g. 100" inputmode="numeric" required />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="cal100">Calories per 100 g (kcal)</label>
+              <input type="number" id="cal100" min="0" step="0.1" placeholder="e.g. 130" inputmode="decimal" required />
+            </div>
+            <div class="field">
+              <label for="prot100">Protein per 100 g (g)</label>
+              <input type="number" id="prot100" min="0" step="0.1" placeholder="e.g. 2.7" inputmode="decimal" required />
+            </div>
+          </div>
+
+          <div class="preview" id="serving-preview" hidden>
+            <span aria-hidden="true">🧮</span>
+            <span id="serving-preview-text"></span>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-wide" id="submit-btn">Add Meal</button>
+            <button type="button" class="btn btn-ghost" id="cancel-edit-btn" hidden>Cancel editing</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card info-card">
+        <h2>How calculations work</h2>
+        <p class="small-text">
+          Nutrition consumed = nutrition per 100 g × quantity in grams ÷ 100.
+          For example, 150 g of cooked rice at 130 kcal / 100 g = <strong>195 kcal</strong>.
+        </p>
+        <p class="small-text muted">
+          This version uses reliable manual calculations from the values you enter — there is
+          no AI food recognition or automatic nutrition analysis. Built-in database values are
+          approximate examples; check packaging or a nutrition database for accuracy.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>
+      NutriLens AI stores data only in your browser (localStorage). It provides no medical or
+      dietary advice — example targets are not suitable for everyone. Consult a qualified
+      professional for personal nutrition guidance.
+    </p>
+  </footer>
+
+  <!-- Toast messages -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480">
+  <!-- NutriLens AI decorative background tile: sparse line-art food doodles.
+       Single soft-green stroke so the same asset works in light and dark mode;
+       final strength is controlled by CSS opacity on the fixed layer. -->
+  <g fill="none" stroke="#4fa36b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+    <!-- Apple -->
+    <g transform="translate(36,34) rotate(-8)">
+      <path d="M20 14 C12 14 7 20 7 28 C7 38 13 46 20 46 C27 46 33 38 33 28 C33 20 28 14 20 14 Z"/>
+      <path d="M20 14 C20 9 22 6 26 4"/>
+      <path d="M26 4 C30 2 34 4 35 8 C31 10 27 8 26 4 Z"/>
+    </g>
+
+    <!-- Banana -->
+    <g transform="translate(200,56) rotate(14)">
+      <path d="M8 8 C10 26 26 38 46 36"/>
+      <path d="M8 8 C12 30 28 42 46 36"/>
+      <path d="M8 8 L6 4"/>
+    </g>
+
+    <!-- Steaming bowl -->
+    <g transform="translate(368,24) rotate(6)">
+      <path d="M6 26 H42 C42 37 34 44 24 44 C14 44 6 37 6 26 Z"/>
+      <path d="M18 18 C16 14 20 12 18 8"/>
+      <path d="M29 18 C27 14 31 12 29 8"/>
+    </g>
+
+    <!-- Leaf sprig -->
+    <g transform="translate(110,160) rotate(-12)">
+      <path d="M6 44 C16 32 26 20 38 10"/>
+      <path d="M16 32 C12 26 14 20 20 18 C24 24 22 30 16 32 Z"/>
+      <path d="M28 20 C26 13 30 8 36 8 C38 14 34 19 28 20 Z"/>
+    </g>
+
+    <!-- Egg -->
+    <g transform="translate(296,182) rotate(10)">
+      <path d="M20 6 C28 6 34 18 34 29 C34 38 28 44 20 44 C12 44 6 38 6 29 C6 18 12 6 20 6 Z"/>
+    </g>
+
+    <!-- Carrot -->
+    <g transform="translate(40,300) rotate(18)">
+      <path d="M10 38 L25 12 C27 8 32 10 30 14 L17 42 C15 46 9 43 10 38 Z"/>
+      <path d="M27 10 C25 5 27 2 30 0"/>
+      <path d="M28 11 C31 7 35 6 38 7"/>
+    </g>
+
+    <!-- Milk glass -->
+    <g transform="translate(212,290) rotate(-7)">
+      <path d="M12 6 H32 L29 44 H15 Z"/>
+      <path d="M14 18 H30"/>
+    </g>
+
+    <!-- Avocado half -->
+    <g transform="translate(382,300) rotate(-14)">
+      <path d="M20 5 C30 5 36 18 36 29 C36 39 29 45 20 45 C11 45 4 39 4 29 C4 18 10 5 20 5 Z"/>
+      <circle cx="20" cy="30" r="7"/>
+    </g>
+
+    <!-- Wheat stalk -->
+    <g transform="translate(140,398) rotate(8)">
+      <path d="M22 44 C22 30 22 18 22 6"/>
+      <path d="M22 14 C17 13 14 9 15 4 C20 5 23 9 22 14 Z"/>
+      <path d="M22 14 C27 13 30 9 29 4 C24 5 21 9 22 14 Z"/>
+      <path d="M22 26 C17 25 14 21 15 16 C20 17 23 21 22 26 Z"/>
+      <path d="M22 26 C27 25 30 21 29 16 C24 17 21 21 22 26 Z"/>
+    </g>
+
+    <!-- Orange slice -->
+    <g transform="translate(318,408) rotate(-10)">
+      <path d="M4 22 A20 20 0 0 1 44 22 Z"/>
+      <path d="M24 22 L24 5"/>
+      <path d="M24 22 L11 10"/>
+      <path d="M24 22 L37 10"/>
+    </g>
+  </g>
+</svg>
